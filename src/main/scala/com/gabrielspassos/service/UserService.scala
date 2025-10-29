@@ -1,6 +1,6 @@
-package com.gabrielspassos.service.v2
+package com.gabrielspassos.service
 
-import com.gabrielspassos.contracts.v2.request.UserRequest
+import com.gabrielspassos.contracts.v1.request.UserRequest
 import com.gabrielspassos.entity.UserEntity
 import com.gabrielspassos.exception.BadRequestException
 import com.gabrielspassos.repository.UserRepository
@@ -10,27 +10,23 @@ import org.springframework.stereotype.Service
 
 import java.security.MessageDigest
 import java.util.UUID
-import scala.jdk.OptionConverters.*
 import scala.jdk.CollectionConverters.*
+import scala.jdk.OptionConverters.*
 
 @Service
-class UserServiceV2 @Autowired()(private val userRepository: UserRepository) {
+class UserService @Autowired()(private val userRepository: UserRepository) {
   
   def createUser(userRequest: UserRequest): UserEntity = {
-    val encryptedCpf = encryptCpf(userRequest.getCpf)
+    val encryptedSsn = encryptString(userRequest.getSsn)
     
-    userRepository.findByCpf(encryptedCpf).toScala match {
+    userRepository.findBySsn(encryptedSsn).toScala match {
       case Some(existingUser) => throw new BadRequestException("User already exists")
       case None => ()
     }
-    
-    val userId = UUID.randomUUID()
+
     val entity = UserEntity(
       id = null,
-      userId = userId,
-      cpf = encryptedCpf,
-      externalId1 = null,
-      externalId2 = null,
+      ssn = encryptedSsn,
       status = UserEntity.activeStatus
     )
     userRepository.save(entity)
@@ -43,19 +39,11 @@ class UserServiceV2 @Autowired()(private val userRepository: UserRepository) {
       throw new BadRequestException("Invalid userId")
     }
     
-    userRepository.findByUserId(userIdOption.get).toScala
-  }
-  
-  def findUsersWithoutCpf(): List[UserEntity] = {
-    userRepository.findByCpfIsNull().asScala.toList
-  }
-  
-  def saveAll(users: List[UserEntity]): List[UserEntity] = {
-    userRepository.saveAll(users.asJava).asScala.toList
+    userRepository.findById(userIdOption.get).toScala
   }
 
-  def encryptCpf(cpfAsString: String): String = {
-    val digest = MessageDigest.getInstance("SHA-256").digest(cpfAsString.getBytes("UTF-8"))
+  private def encryptString(value: String): String = {
+    val digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes("UTF-8"))
     digest.map("%02x".format(_)).mkString
   }
 

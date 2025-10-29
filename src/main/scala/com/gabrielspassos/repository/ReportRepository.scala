@@ -5,13 +5,11 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 import java.lang.Long
-import java.util.Optional
+import java.util.{Optional, UUID}
 
 @Repository
-trait ReportRepository extends CrudRepository[ReportEntity, Long] {
-
-  def findByExternalId1(externalId1: String): Optional[ReportEntity]
-
+trait ReportRepository extends CrudRepository[ReportEntity, UUID] {
+  
   def findByUserId(userId: String): Optional[ReportEntity]
 
 }

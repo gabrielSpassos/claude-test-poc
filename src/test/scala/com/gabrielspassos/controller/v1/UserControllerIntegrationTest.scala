@@ -1,9 +1,9 @@
 package com.gabrielspassos.controller.v1
 
 import com.gabrielspassos.repository.UserRepository
-import com.gabrielspassos.{Application, BaseIntegrationTest}
+import com.gabrielspassos.{Application, BaseIntegrationTest, RandomSSNGenerator}
 import org.json.JSONObject
-import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertNotNull}
 import org.junit.jupiter.api.{AfterEach, Test, TestInstance}
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration
@@ -15,9 +15,9 @@ import org.springframework.http.MediaType.APPLICATION_JSON_VALUE
 
 import java.net.URI
 import java.net.http.{HttpClient, HttpRequest, HttpResponse}
+import java.util.UUID
 import scala.collection.mutable.ListBuffer
 import scala.jdk.OptionConverters.*
-import scala.util.Random
 
 @SpringBootTest(
   webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
@@ -31,13 +31,13 @@ class UserControllerIntegrationTest @Autowired()(private val userRepository: Use
   @LocalServerPort
   var randomServerPort: Int = 0
 
-  private val externalIds = ListBuffer[(String, String)]()
+  private val userIds = ListBuffer[UUID]()
   private val client = HttpClient.newHttpClient()
 
   @AfterEach
   def cleanUp(): Unit = {
-    externalIds.foreach((externalId1, externalId2) => {
-      userRepository.findByExternalId1AndExternalId2(externalId1, externalId2).toScala match
+    userIds.foreach(userId => {
+      userRepository.findById(userId).toScala match
         case Some(user) =>
           userRepository.delete(user)
         case None => ()
@@ -46,16 +46,9 @@ class UserControllerIntegrationTest @Autowired()(private val userRepository: Use
 
   @Test
   def shouldCreateUser(): Unit = {
-    val externalId1 = Random().between(1L, Long.MaxValue)
-    val externalId2 = Random().between(1L, Long.MaxValue)
-    val request =
-      s"""
-      {
-        "externalId1": "$externalId1",
-        "externalId2": "$externalId2"
-      }
-      """
-    val url = s"http://localhost:$randomServerPort/v1/users"
+    val ssn = RandomSSNGenerator.generate()
+    val request = s"""{"ssn": "$ssn"}"""
+    val url = s"http://localhost:$randomServerPort/v2/users"
 
     val response = client.send(
       HttpRequest.newBuilder()
@@ -71,23 +64,16 @@ class UserControllerIntegrationTest @Autowired()(private val userRepository: Use
     assertNotNull(response.body())
 
     val responseBody = JSONObject(response.body())
-    assertEquals(externalId1.toString, responseBody.getString("externalId1"))
-    assertEquals(externalId2.toString, responseBody.getString("externalId2"))
-    externalIds.addOne((externalId1.toString, externalId2.toString))
+    assertFalse(responseBody.isNull("userId"))
+    val userId = UUID.fromString(responseBody.getString("userId"))
+    userIds.addOne(userId)
   }
 
   @Test
   def shouldFailToCreateSameUserAgain(): Unit = {
-    val externalId1 = Random().between(1L, Long.MaxValue)
-    val externalId2 = Random().between(1L, Long.MaxValue)
-    val request =
-      s"""
-      {
-        "externalId1": "$externalId1",
-        "externalId2": "$externalId2"
-      }
-      """
-    val url = s"http://localhost:$randomServerPort/v1/users"
+    val ssn = RandomSSNGenerator.generate()
+    val request = s"""{"ssn": "$ssn"}"""
+    val url = s"http://localhost:$randomServerPort/v2/users"
 
     val response1 = client.send(
       HttpRequest.newBuilder()
@@ -99,9 +85,10 @@ class UserControllerIntegrationTest @Autowired()(private val userRepository: Use
       HttpResponse.BodyHandlers.ofString()
     )
 
-    assertEquals(201, response1.statusCode())
-    assertNotNull(response1.body())
-    externalIds.addOne((externalId1.toString, externalId2.toString))
+    val responseBody = JSONObject(response1.body())
+    assertFalse(responseBody.isNull("userId"))
+    val userId = UUID.fromString(responseBody.getString("userId"))
+    userIds.addOne(userId)
 
     val response2 = client.send(
       HttpRequest.newBuilder()

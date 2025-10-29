@@ -7,12 +7,12 @@ import org.springframework.http.{HttpStatus, ResponseEntity}
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping(Array("/v1/reports"))
+@RequestMapping(Array("/v2/reports"))
 class ReportController @Autowired()(private val reportContract: ReportContractImpl) {
 
-  @PostMapping(Array("/{externalId1}"))
-  def createReport(@PathVariable(name = "externalId1", required = true) externalId1: String): ResponseEntity[ReportResponse] = {
-    val reportResponse = reportContract.createReport(externalId1)
+  @PostMapping(Array("/{userId}"))
+  def createReport(@PathVariable(name = "userId", required = true) userId: String): ResponseEntity[ReportResponse] = {
+    val reportResponse = reportContract.createReport(userId)
     ResponseEntity.status(HttpStatus.OK).body(reportResponse)
   }
 
