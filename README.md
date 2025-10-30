@@ -135,8 +135,6 @@ create integration tests for class UserDAO covering happy and unhappy paths and 
 ```
 - Output: 
 ```
-create integration tests for class UserDAO covering happy and unhappy paths and all code branches
-
 46 +    @Test
 47 +    def shouldFindUserById(): Unit = {
 48 +      val userToSave = createUser()
@@ -255,8 +253,6 @@ create integration tests for class UserDAO covering happy and unhappy paths and 
 ```
 - Output: 
 ```
- verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
-
 │ src/test/scala/com/gabrielspassos/service/ReportServiceTest.scala                                                                                                                                                                                                           │
 │                                                                                                                                                                                                                                                                             │
 │ package com.gabrielspassos.service                                                                                                                                                                                                                                          │
