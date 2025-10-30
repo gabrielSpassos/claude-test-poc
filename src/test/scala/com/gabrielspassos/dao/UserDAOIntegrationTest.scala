@@ -5,7 +5,6 @@ import com.gabrielspassos.{BaseIntegrationTest, RandomSSNGenerator}
 import org.junit.jupiter.api.Assertions.{assertNotNull, fail}
 import org.junit.jupiter.api.{AfterEach, Test, TestInstance}
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.context.annotation.ComponentScan
 import org.springframework.data.jdbc.core.JdbcAggregateTemplate
@@ -39,6 +38,7 @@ class UserDAOIntegrationTest @Autowired()(private val userDAO: UserDAO,
       case Right(savedUser) =>
         assertNotNull(savedUser)
         assertNotNull(savedUser.id)
+        userList += savedUser
     }
   }
 
