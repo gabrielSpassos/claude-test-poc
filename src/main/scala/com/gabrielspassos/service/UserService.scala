@@ -2,7 +2,6 @@ package com.gabrielspassos.service
 
 import com.gabrielspassos.contracts.v1.request.UserRequest
 import com.gabrielspassos.dao.UserDAO
-import com.gabrielspassos.dao.repository.UserRepository
 import com.gabrielspassos.dto.{BadRequestErrorDTO, ErrorDTO}
 import com.gabrielspassos.entity.UserEntity
 import com.gabrielspassos.logger.Logger
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
 import java.security.MessageDigest
-import scala.jdk.OptionConverters.*
 
 @Service
 class UserService @Autowired()(private val logger: Logger, private val userDAO: UserDAO) {
