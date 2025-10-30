@@ -1,7 +1,7 @@
 package com.gabrielspassos.controller.v1
 
+import com.gabrielspassos.dao.repository.{ReportRepository, UserRepository}
 import com.gabrielspassos.entity.UserEntity
-import com.gabrielspassos.repository.{ReportRepository, UserRepository}
 import com.gabrielspassos.{Application, BaseIntegrationTest, RandomSSNGenerator}
 import org.json.JSONObject
 import org.junit.jupiter.api.Assertions.{assertEquals, assertFalse, assertNotNull, fail}

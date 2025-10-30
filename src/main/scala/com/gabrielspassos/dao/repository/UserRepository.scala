@@ -1,4 +1,4 @@
-package com.gabrielspassos.repository
+package com.gabrielspassos.dao.repository
 
 import com.gabrielspassos.entity.UserEntity
 import org.springframework.data.repository.CrudRepository

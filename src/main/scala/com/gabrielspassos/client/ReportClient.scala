@@ -1,5 +1,6 @@
 package com.gabrielspassos.client
 
+import com.gabrielspassos.dto.ErrorDTO
 import org.springframework.stereotype.Component
 
 import scala.util.Random
@@ -7,10 +8,10 @@ import scala.util.Random
 @Component
 class ReportClient {
   
-  def generateReport(): String = {
+  def generateReport(): Either[ErrorDTO, String] = {
     // Simulate report generation
     val reportId = Random().nextInt()
-    s"Fake report content with id: $reportId"
+    Right(s"Fake report content with id: $reportId")
   }
 
 }

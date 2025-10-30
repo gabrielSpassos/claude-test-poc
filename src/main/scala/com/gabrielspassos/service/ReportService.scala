@@ -1,9 +1,11 @@
 package com.gabrielspassos.service
 
 import com.gabrielspassos.client.ReportClient
+import com.gabrielspassos.dao.ReportDAO
+import com.gabrielspassos.dao.repository.ReportRepository
+import com.gabrielspassos.dto.{BadRequestErrorDTO, ErrorDTO, NotFoundErrorDTO}
 import com.gabrielspassos.entity.ReportEntity
-import com.gabrielspassos.exception.{BadRequestException, NotFoundException}
-import com.gabrielspassos.repository.ReportRepository
+import com.gabrielspassos.logger.Logger
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 
@@ -11,31 +13,37 @@ import scala.jdk.OptionConverters.*
 
 
 @Service
-class ReportService @Autowired()(private val userService: UserService,
+class ReportService @Autowired()(private val logger: Logger,
+                                 private val userService: UserService,
                                  private val reportClient: ReportClient,
-                                 private val reportRepository: ReportRepository) {
+                                 private val reportDAO: ReportDAO) {
   
-  def createReport(userId: String): ReportEntity = {
-    val user = userService.findUserByUserId(userId) match {
-      case None => throw new NotFoundException("Not found user")
-      case Some(user) => user
-    }
-    
-    if (!user.isActive) {
-      throw new BadRequestException("User not active to create report")
-    }
-    
-    val content = reportClient.generateReport()
-    val report = reportRepository.findByUserId(userId).toScala match {
-      case Some(report) =>
-        report.copy(content = content)
-      case None =>
-        ReportEntity(
-          id = null,
-          userId = user.id,
-          content = content
-        )
-    }
-    reportRepository.save(report)
+  def createReport(userId: String): Either[ErrorDTO, ReportEntity] = {
+    for {
+      userOption <- userService.findUserByUserId(userId)
+      _ <- if (userOption.isEmpty) {
+        Left(NotFoundErrorDTO("Not found user"))
+      } else { Right(()) }
+      
+      user = userOption.get
+      _ <- if (!user.isActive) {
+        Left(BadRequestErrorDTO("User not active to create report"))
+      } else { Right(()) }
+      
+      content <- reportClient.generateReport()
+      
+      reportOption <- reportDAO.findByUserId(userId)
+      report = reportOption match {
+        case Some(report) =>
+          report.copy(content = content)
+        case None =>
+          ReportEntity(
+            id = null,
+            userId = user.id,
+            content = content
+          )
+      }
+      savedReport <- reportDAO.save(report)
+    } yield savedReport
   }
 }
