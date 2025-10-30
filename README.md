@@ -9,9 +9,12 @@
 ## Prompts
 
 1. 
+- Input: 
 ```
 create unit tests for class UserService covering happy and unhappy paths and cover all the code branches, do not hard code ids
-
+```
+- Output: 
+```
 +       @Test
 74 +    def shouldReturnErrorWhenUserAlreadyExists(): Unit = {
 75 +      val ssn = RandomSSNGenerator.generate()
@@ -126,6 +129,11 @@ create unit tests for class UserService covering happy and unhappy paths and cov
 ```
 
 2.
+- Input: 
+```
+create integration tests for class UserDAO covering happy and unhappy paths and all code branches
+```
+- Output: 
 ```
 create integration tests for class UserDAO covering happy and unhappy paths and all code branches
 
@@ -241,6 +249,11 @@ create integration tests for class UserDAO covering happy and unhappy paths and 
 ```
 
 3.
+- Input:
+```
+ verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
+```
+- Output: 
 ```
  verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
 
@@ -487,6 +500,6 @@ create integration tests for class UserDAO covering happy and unhappy paths and 
 ## Tests
 
 ```bash
-[info] Passed: Total 6, Failed 0, Errors 0, Passed 6
-[success] Total time: 14 s, completed Oct 30, 2025, 5:48:03 AM
+[info] Passed: Total 28, Failed 0, Errors 0, Passed 28
+[success] Total time: 6 s, completed Oct 30, 2025, 3:57:54 PM
 ```
