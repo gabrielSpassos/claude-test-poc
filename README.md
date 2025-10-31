@@ -13,8 +13,12 @@
 ```
 create unit tests for class UserService covering happy and unhappy paths and cover all the code branches, do not hard code ids
 ```
-- Output: 
+- Test:
+```bash
+sbt clean "testOnly com.gabrielspassos.service.UserServiceTest"
 ```
+- Output: 
+```scala
 +       @Test
 74 +    def shouldReturnErrorWhenUserAlreadyExists(): Unit = {
 75 +      val ssn = RandomSSNGenerator.generate()
@@ -131,119 +135,208 @@ create unit tests for class UserService covering happy and unhappy paths and cov
 2.
 - Input: 
 ```
-create integration tests for class UserDAO covering happy and unhappy paths and all code branches
+create integration tests for class ReportService covering happy and unhappy paths and all code branches
+```
+- Test:
+```bash
+./run-tests.sh
 ```
 - Output: 
-```
-46 +    @Test
-47 +    def shouldFindUserById(): Unit = {
-48 +      val userToSave = createUser()
-49 +      val savedUser = userDAO.save(userToSave).getOrElse(fail("failed to save user"))
-50 +      userList += savedUser
-51 +  
-52 +      val eitherResult = userDAO.findById(savedUser.id)
-53 +  
-54 +      eitherResult match {
-55 +        case Left(_) => fail("should have success return")
-56 +        case Right(None) => fail("should have found user")
-57 +        case Right(Some(foundUser)) =>
-58 +          assertEquals(savedUser.id, foundUser.id)
-59 +          assertEquals(savedUser.ssn, foundUser.ssn)
-60 +          assertEquals(savedUser.status, foundUser.status)
-61 +      }
-62 +    }
-63 +  
-64 +    @Test
-65 +    def shouldReturnNoneWhenUserNotFoundById(): Unit = {
-66 +      val randomUserId = UUID.randomUUID()
-67 +  
-68 +      val eitherResult = userDAO.findById(randomUserId)
-69 +  
-70 +      eitherResult match {
-71 +        case Left(_) => fail("should have success return")
-72 +        case Right(None) => assertTrue(true)
-73 +        case Right(Some(_)) => fail("should not have found user")
-74 +      }
-75 +    }
-76 +  
-77 +    @Test
-78 +    def shouldFindUserBySsn(): Unit = {
-79 +      val userToSave = createUser()
-80 +      val savedUser = userDAO.save(userToSave).getOrElse(fail("failed to save user"))
-81 +      userList += savedUser
-82 +  
-83 +      val eitherResult = userDAO.findBySsn(savedUser.ssn)
-84 +  
-85 +      eitherResult match {
-86 +        case Left(_) => fail("should have success return")
-87 +        case Right(None) => fail("should have found user")
-88 +        case Right(Some(foundUser)) =>
-89 +          assertEquals(savedUser.id, foundUser.id)
-90 +          assertEquals(savedUser.ssn, foundUser.ssn)
-91 +          assertEquals(savedUser.status, foundUser.status)
-92 +      }
-93 +    }
-94 +  
-95 +    @Test
-96 +    def shouldReturnNoneWhenUserNotFoundBySsn(): Unit = {
-97 +      val randomSsn = encryptString(RandomSSNGenerator.generate())
-98 +  
-99 +      val eitherResult = userDAO.findBySsn(randomSsn)
-100 +  
-101 +      eitherResult match {
-102 +        case Left(_) => fail("should have success return")
-103 +        case Right(None) => assertTrue(true)
-104 +        case Right(Some(_)) => fail("should not have found user")
-105 +      }
-106 +    }
-107 +  
-108 +    @Test
-109 +    def shouldSaveMultipleUsers(): Unit = {
-110 +      val user1 = createUser()
-111 +      val user2 = createUser()
-112 +  
-113 +      val result1 = userDAO.save(user1)
-114 +      val result2 = userDAO.save(user2)
-115 +  
-116 +      result1 match {
-117 +        case Left(_) => fail("failed to save first user")
-118 +        case Right(savedUser1) =>
-119 +          assertNotNull(savedUser1.id)
-120 +          userList += savedUser1
-121 +      }
-122 +  
-123 +      result2 match {
-124 +        case Left(_) => fail("failed to save second user")
-125 +        case Right(savedUser2) =>
-126 +          assertNotNull(savedUser2.id)
-127 +          userList += savedUser2
-128 +      }
-129 +    }
-130 +  
-131 +    @Test
-132 +    def shouldFindSavedUserAfterMultipleSaves(): Unit = {
-133 +      val user1 = createUser()
-134 +      val user2 = createUser()
-135 +      val user3 = createUser()
-136 +  
-137 +      val savedUser1 = userDAO.save(user1).getOrElse(fail("failed to save user1"))
-138 +      val savedUser2 = userDAO.save(user2).getOrElse(fail("failed to save user2"))
-139 +      val savedUser3 = userDAO.save(user3).getOrElse(fail("failed to save user3"))
-140 +  
-141 +      userList += savedUser1
-142 +      userList += savedUser2
-143 +      userList += savedUser3
-144 +  
-145 +      val foundUser2 = userDAO.findById(savedUser2.id)
-146 +  
-147 +      foundUser2 match {
-148 +        case Left(_) => fail("should have found user2")
-149 +        case Right(None) => fail("should have found user2")
-150 +        case Right(Some(user)) =>
-151 +          assertEquals(savedUser2.id, user.id)
-152 +          assertEquals(savedUser2.ssn, user.ssn)
-153 +      }
-154 +    }
+```scala
+package com.gabrielspassos.service
+
+import com.gabrielspassos.client.ReportClient
+import com.gabrielspassos.dao.repository.{ReportRepository, UserRepository}
+import com.gabrielspassos.dto.InternalErrorDTO
+import com.gabrielspassos.entity.{ReportEntity, UserEntity}
+import com.gabrielspassos.{Application, BaseIntegrationTest, RandomSSNGenerator}
+import org.junit.jupiter.api.Assertions.{assertEquals, assertNotNull, assertTrue, fail}
+import org.junit.jupiter.api.{AfterEach, Test, TestInstance}
+import org.mockito.Mockito.when
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.boot.test.mock.mockito.MockBean
+import org.springframework.context.annotation.ComponentScan
+
+import java.security.MessageDigest
+import java.util.UUID
+import scala.collection.mutable.ListBuffer
+import scala.jdk.OptionConverters.*
+
+@SpringBootTest(classes = Array(classOf[Application]))
+@EnableAutoConfiguration
+@ComponentScan(Array("com.*"))
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+class ReportServiceIntegrationTest @Autowired()(
+  private val reportService: ReportService,
+  private val userRepository: UserRepository,
+  private val reportRepository: ReportRepository
+) extends BaseIntegrationTest {
+
+  @MockBean
+  private val reportClient: ReportClient = null
+
+  private val userIds = ListBuffer[UUID]()
+
+  @AfterEach
+  def cleanUp(): Unit = {
+    userIds.foreach(userId => {
+      reportRepository.findByUserId(userId.toString).toScala match
+        case Some(report) =>
+          reportRepository.delete(report)
+        case None => ()
+
+      userRepository.findById(userId).toScala match
+        case Some(user) =>
+          userRepository.delete(user)
+        case None => ()
+    })
+    userIds.clear()
+  }
+
+  @Test
+  def shouldCreateReportForActiveUser(): Unit = {
+    val userId = createActiveUser()
+    val reportContent = "Report content for active user"
+
+    when(reportClient.generateReport()).thenReturn(Right(reportContent))
+
+    val eitherResult = reportService.createReport(userId.toString)
+
+    eitherResult match {
+      case Left(error) => fail(s"Should have created report successfully: ${error.getMessage}")
+      case Right(report) =>
+        assertNotNull(report)
+        assertNotNull(report.id)
+        assertEquals(userId, report.userId)
+        assertEquals(reportContent, report.content)
+    }
+  }
+
+  @Test
+  def shouldUpdateExistingReport(): Unit = {
+    val userId = createActiveUser()
+    val initialContent = "Initial report content"
+    val updatedContent = "Updated report content"
+
+    val initialReport = ReportEntity(
+      id = null,
+      userId = userId,
+      content = initialContent
+    )
+    val savedInitialReport = reportRepository.save(initialReport)
+
+    when(reportClient.generateReport()).thenReturn(Right(updatedContent))
+
+    val eitherResult = reportService.createReport(userId.toString)
+
+    eitherResult match {
+      case Left(error) => fail(s"Should have updated report successfully: ${error.getMessage}")
+      case Right(report) =>
+        assertNotNull(report)
+        assertEquals(savedInitialReport.id, report.id)
+        assertEquals(userId, report.userId)
+        assertEquals(updatedContent, report.content)
+    }
+  }
+
+  @Test
+  def shouldFailWhenUserNotFound(): Unit = {
+    val nonExistentUserId = UUID.randomUUID().toString
+
+    when(reportClient.generateReport()).thenReturn(Right("Content"))
+
+    val eitherResult = reportService.createReport(nonExistentUserId)
+
+    eitherResult match {
+      case Left(error) =>
+        assertEquals(404, error.getStatus)
+        assertEquals("Not found user", error.getMessage)
+      case Right(_) => fail("Should have failed with user not found error")
+    }
+  }
+
+  @Test
+  def shouldFailWhenUserIsInactive(): Unit = {
+    val userId = createInactiveUser()
+
+    when(reportClient.generateReport()).thenReturn(Right("Content"))
+
+    val eitherResult = reportService.createReport(userId.toString)
+
+    eitherResult match {
+      case Left(error) =>
+        assertEquals(400, error.getStatus)
+        assertEquals("User not active to create report", error.getMessage)
+      case Right(_) => fail("Should have failed with user not active error")
+    }
+  }
+
+  @Test
+  def shouldFailWithInvalidUserId(): Unit = {
+    val invalidUserId = "invalid-uuid-format"
+
+    when(reportClient.generateReport()).thenReturn(Right("Content"))
+
+    val eitherResult = reportService.createReport(invalidUserId)
+
+    eitherResult match {
+      case Left(error) =>
+        assertEquals(400, error.getStatus)
+        assertEquals("Invalid userId", error.getMessage)
+      case Right(_) => fail("Should have failed with invalid userId error")
+    }
+  }
+
+  @Test
+  def shouldFailWhenReportClientFails(): Unit = {
+    val userId = createActiveUser()
+    val clientError = InternalErrorDTO("Failed to generate report")
+
+    when(reportClient.generateReport()).thenReturn(Left(clientError))
+
+    val eitherResult = reportService.createReport(userId.toString)
+
+    eitherResult match {
+      case Left(error) =>
+        assertEquals(500, error.getStatus)
+        assertEquals("Failed to generate report", error.getMessage)
+      case Right(_) => fail("Should have failed when report client fails")
+    }
+  }
+
+  private def createActiveUser(): UUID = {
+    val ssn = RandomSSNGenerator.generate()
+    val encryptedSsn = encryptString(ssn)
+    val user = UserEntity(
+      id = null,
+      ssn = encryptedSsn,
+      status = UserEntity.activeStatus
+    )
+    val savedUser = userRepository.save(user)
+    userIds += savedUser.id
+    savedUser.id
+  }
+
+  private def createInactiveUser(): UUID = {
+    val ssn = RandomSSNGenerator.generate()
+    val encryptedSsn = encryptString(ssn)
+    val user = UserEntity(
+      id = null,
+      ssn = encryptedSsn,
+      status = UserEntity.inactiveStatus
+    )
+    val savedUser = userRepository.save(user)
+    userIds += savedUser.id
+    savedUser.id
+  }
+
+  private def encryptString(value: String): String = {
+    val digest = MessageDigest.getInstance("SHA-256").digest(value.getBytes("UTF-8"))
+    digest.map("%02x".format(_)).mkString
+  }
+}
 ```
 
 3.
@@ -251,8 +344,12 @@ create integration tests for class UserDAO covering happy and unhappy paths and 
 ```
  verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
 ```
-- Output: 
+- Test:
+```bash
+sbt clean "testOnly com.gabrielspassos.service.ReportServiceTest"
 ```
+- Output: 
+```scala
 │ src/test/scala/com/gabrielspassos/service/ReportServiceTest.scala                                                                                                                                                                                                           │
 │                                                                                                                                                                                                                                                                             │
 │ package com.gabrielspassos.service                                                                                                                                                                                                                                          │
