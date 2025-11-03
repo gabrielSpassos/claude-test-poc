@@ -1,4 +1,4 @@
-# Database Migration POC
+# Generating Tests
 
 ## Stack
 - Scala 3.7.3
@@ -12,6 +12,8 @@
 - Input: 
 ```
 create unit tests for class UserService covering happy and unhappy paths and cover all the code branches, do not hard code ids
+
+Do this fast
 ```
 - Test:
 ```bash
@@ -136,6 +138,9 @@ sbt clean "testOnly com.gabrielspassos.service.UserServiceTest"
 - Input: 
 ```
 create integration tests for class ReportService covering happy and unhappy paths and all code branches
+
+Please: 
+1. Do this fast
 ```
 - Test:
 ```bash
@@ -342,7 +347,9 @@ class ReportServiceIntegrationTest @Autowired()(
 3.
 - Input:
 ```
- verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
+verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
+
+Please Do this fast
 ```
 - Test:
 ```bash
