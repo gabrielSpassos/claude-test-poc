@@ -45,7 +45,7 @@ Please:
 3.
 - Input:
 ```
-verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
+check if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
 
 1. Please Do this fast
 2. Do not run the tests after cleating the unit tests
