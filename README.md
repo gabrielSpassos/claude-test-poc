@@ -14,6 +14,7 @@
 create unit tests for class UserService covering happy and unhappy paths and cover all the code branches, do not hard code ids
 
 1. Do this fast
+2. Do not run the tests after creating the unit tests
 ```
 - Test:
 ```bash
@@ -27,6 +28,7 @@ create integration tests for class ReportService covering happy and unhappy path
 
 Please: 
 1. Do this fast
+2. Do not run the tests after creating the integration tests
 ```
 - Test:
 ```bash
@@ -38,7 +40,8 @@ Please:
 ```
 verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
 
-Please Do this fast
+1. Please Do this fast
+2. Do not run the tests after cleating the unit tests
 ```
 
 - Test:
