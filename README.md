@@ -9,6 +9,7 @@
 ## IMPORTANT
 - shift + tab => auto edit code on
 - tab => thinking off
+- start colima
 
 ## Prompts
 
@@ -19,6 +20,7 @@ create unit tests for class UserService covering happy and unhappy paths and cov
 
 1. Do this fast
 2. Do not run the tests after creating the unit tests
+3. Is not needed summarize anything at the end
 ```
 - Test:
 ```bash
@@ -33,6 +35,7 @@ create integration tests for class ReportService covering happy and unhappy path
 Please: 
 1. Do this fast
 2. Do not run the tests after creating the integration tests
+3. Is not needed summarize anything at the end
 ```
 - Test:
 ```bash
@@ -46,6 +49,7 @@ verify if there is any service class that needs unit test to implement and creat
 
 1. Please Do this fast
 2. Do not run the tests after cleating the unit tests
+3. Is not needed summarize anything at the end
 ```
 
 - Test:
