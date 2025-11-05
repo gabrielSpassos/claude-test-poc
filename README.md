@@ -6,6 +6,10 @@
 - Spring Boot 3.5.7
 - SBT 1.11.7
 
+## IMPORTANT
+- shift + tab => auto edit code on
+- tab => thinking off
+
 ## Prompts
 
 1. 
