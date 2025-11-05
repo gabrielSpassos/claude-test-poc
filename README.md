@@ -13,13 +13,49 @@
 ```
 create unit tests for class UserService covering happy and unhappy paths and cover all the code branches, do not hard code ids
 
-Do this fast
+1. Do this fast
 ```
 - Test:
 ```bash
 sbt clean "testOnly com.gabrielspassos.service.UserServiceTest"
 ```
-- Output: 
+
+2.
+- Input: 
+```
+create integration tests for class ReportService covering happy and unhappy paths and all code branches
+
+Please: 
+1. Do this fast
+```
+- Test:
+```bash
+./run-tests.sh
+```
+
+3.
+- Input:
+```
+verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
+
+Please Do this fast
+```
+
+- Test:
+```bash
+sbt clean "testOnly com.gabrielspassos.service.ReportServiceTest"
+```
+
+## Tests
+
+```bash
+[info] Passed: Total 28, Failed 0, Errors 0, Passed 28
+[success] Total time: 6 s, completed Oct 30, 2025, 3:57:54 PM
+```
+
+## Claude Outputs
+
+- 1:
 ```scala
 +       @Test
 74 +    def shouldReturnErrorWhenUserAlreadyExists(): Unit = {
@@ -134,19 +170,7 @@ sbt clean "testOnly com.gabrielspassos.service.UserServiceTest"
 183 +  
 ```
 
-2.
-- Input: 
-```
-create integration tests for class ReportService covering happy and unhappy paths and all code branches
-
-Please: 
-1. Do this fast
-```
-- Test:
-```bash
-./run-tests.sh
-```
-- Output: 
+- 2:
 ```scala
 package com.gabrielspassos.service
 
@@ -344,18 +368,7 @@ class ReportServiceIntegrationTest @Autowired()(
 }
 ```
 
-3.
-- Input:
-```
-verify if there is any service class that needs unit test to implement and create then, covering happy, unhappy and all code branches
-
-Please Do this fast
-```
-- Test:
-```bash
-sbt clean "testOnly com.gabrielspassos.service.ReportServiceTest"
-```
-- Output: 
+- 3: 
 ```scala
 │ src/test/scala/com/gabrielspassos/service/ReportServiceTest.scala                                                                                                                                                                                                           │
 │                                                                                                                                                                                                                                                                             │
@@ -595,11 +608,4 @@ sbt clean "testOnly com.gabrielspassos.service.ReportServiceTest"
 │     ReportService(logger = logger, userService = userService, reportClient = reportClient, reportDAO = reportDAO)                                                                                                                                                           │
 │   }                                                                                                                                                                                                                                                                         │
 │ }  
-```
-
-## Tests
-
-```bash
-[info] Passed: Total 28, Failed 0, Errors 0, Passed 28
-[success] Total time: 6 s, completed Oct 30, 2025, 3:57:54 PM
 ```
