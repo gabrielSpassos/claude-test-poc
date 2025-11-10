@@ -34,8 +34,9 @@ create integration tests for class ReportService covering happy and unhappy path
 
 Please: 
 1. Do this fast
-2. Do not run the tests after creating the integration tests
-3. Is not needed summarize anything at the end
+2. Do not mock things
+3. Do not run the tests after creating the integration tests
+4. Is not needed summarize anything at the end
 ```
 - Test:
 ```bash
