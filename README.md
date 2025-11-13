@@ -11,6 +11,14 @@
 - tab => thinking off
 - start colima
 
+## Feature Claude
+```
+* NO SDD
+  * https://github.com/diegopacheco/ai-playground/blob/main/agents/SDD-sucks.png
+  * https://github.com/diegopacheco/ai-playground/blob/main/agents/SDD-research.md
+* NO vibe coding 
+```
+
 ## Prompts
 
 1. 
